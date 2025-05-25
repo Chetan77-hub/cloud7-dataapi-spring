@@ -34,4 +34,4 @@ jobs:
     - name: Build Docker image
       run: |
        echo "Building docker image for $APP_NAME"
-       docker build -t $APP_NAME -f docker/Dockerfile
+       docker build -t $APP_NAME -f docker/Dockerfile .
