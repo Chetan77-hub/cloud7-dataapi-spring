@@ -10,8 +10,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(classes = EmpController.class)
-@WebMvcTest(EmpController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class EmpControllerTest {
 
     @Autowired
