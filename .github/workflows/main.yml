@@ -9,9 +9,20 @@ on:
 jobs:
   build:
    runs-on: ubuntu-latest
+   
    env:
     APP_NAME: ${{ github.event.repository.name }}  # Repo name as app name
     BUILD_NO: ${{ github.run_number }} 
+    
    steps:
     - name: Checkout source code
       uses: actions/checkout@v4 
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '21'
+        distribution: 'adoptopenjdk'
+
+    - name: Build using Maven
+      run: mvn clean install
