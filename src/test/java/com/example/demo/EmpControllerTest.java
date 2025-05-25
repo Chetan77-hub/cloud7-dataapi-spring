@@ -3,55 +3,47 @@ package com.example.demo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest  // No need for (classes = ...)
-@AutoConfigureMockMvc
-public class EmpControllerTest {
+@WebMvcTest(EmployeeController.class)
+public class EmployeeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
     void testGetEmployee() throws Exception {
-        mockMvc.perform(get("/getemployee"))
+        mockMvc.perform(get("/employee/getemployee"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Employee API working"));
+                .andExpect(jsonPath("$.name").value("John Doe"))
+                .andExpect(jsonPath("$.age").value(30));
     }
 
     @Test
-    void testAddEmployee_Valid() throws Exception {
-        String json = new ObjectMapper().writeValueAsString(new Employee("John", 30));
-        mockMvc.perform(post("/addemployee")
+    void testAddEmployeeValid() throws Exception {
+        Employee employee = new Employee("Alice", 28);
+        mockMvc.perform(post("/employee/addemployee")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+                        .content(objectMapper.writeValueAsString(employee)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("User added"));
     }
 
     @Test
-    void testAddEmployee_Invalid() throws Exception {
-        mockMvc.perform(post("/addemployee")
+    void testAddEmployeeInvalid() throws Exception {
+        Employee employee = new Employee("", 0);
+        mockMvc.perform(post("/employee/addemployee")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isBadGateway());
-    }
-
-    static class Employee {
-        public String name;
-        public int age;
-
-        public Employee(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-
-        public Employee() {}
+                        .content(objectMapper.writeValueAsString(employee)))
+                .andExpect(status().isBadGateway())
+                .andExpect(content().string("Invalid data"));
     }
 }
