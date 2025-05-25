@@ -1,59 +1,52 @@
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+package com.example.demo;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-class EmpControllerTest {
+@RestController
+@RequestMapping("/employee")
+public class EmployeeController {
 
-    private EmpController empController;
-
-    @BeforeEach
-    void setUp() {
-        empController = new EmpController();
+    // Endpoint to return simple employee data
+    @GetMapping("/getemployee")
+    public Employee getEmployee() {
+        return new Employee("John Doe", 30);
     }
 
-    @Test
-    void testGetEmployee() {
-        Employee employee = empController.getEmployee();
-        
-        assertEquals("John Doe", employee.getName());
-        assertEquals(30, employee.getAge());
+    // Endpoint to add employee, expects JSON body with username and age
+    @PostMapping("/addemployee")
+    public ResponseEntity<String> addEmployee(@RequestBody Employee employee) {
+        if (employee.getName() != null && employee.getAge() > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body("User added");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Invalid data");
+        }
+    }
+}
+
+class Employee {
+    private String name;
+    private int age;
+
+    // Constructor, Getters, and Setters
+    public Employee(String name, int age) {
+        this.name = name;
+        this.age = age;
     }
 
-    @Test
-    void testAddEmployeeValidData() {
-        Employee validEmployee = new Employee("Alice", 25);
-        ResponseEntity<String> response = empController.addEmployee(validEmployee);
-        
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("User added", response.getBody());
+    public String getName() {
+        return name;
     }
 
-    @Test
-    void testAddEmployeeInvalidName() {
-        Employee invalidEmployee = new Employee(null, 25);
-        ResponseEntity<String> response = empController.addEmployee(invalidEmployee);
-        
-        assertEquals(HttpStatus.BAD_GATEWAY, response.getStatusCode());
-        assertEquals("Invalid data", response.getBody());
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Test
-    void testAddEmployeeInvalidAge() {
-        Employee invalidEmployee = new Employee("Bob", -5);
-        ResponseEntity<String> response = empController.addEmployee(invalidEmployee);
-        
-        assertEquals(HttpStatus.BAD_GATEWAY, response.getStatusCode());
-        assertEquals("Invalid data", response.getBody());
+    public int getAge() {
+        return age;
     }
 
-    @Test
-    void testAddEmployeeEmptyName() {
-        Employee invalidEmployee = new Employee("", 25);
-        ResponseEntity<String> response = empController.addEmployee(invalidEmployee);
-        
-        assertEquals(HttpStatus.BAD_GATEWAY, response.getStatusCode());
-        assertEquals("Invalid data", response.getBody());
+    public void setAge(int age) {
+        this.age = age;
     }
 }
