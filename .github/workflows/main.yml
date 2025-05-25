@@ -22,7 +22,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '21'
-        distribution: 'adoptopenjdk'
+        distribution: 'oracle'
 
     - name: Build using Maven
       run: mvn clean install
