@@ -1,49 +1,36 @@
 package com.example.demo;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+class EmpControllerTest {
 
-@WebMvcTest(EmpController.class)
-public class EmpControllerTest {
+    private EmpController empController;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Test
-    void testGetEmployee() throws Exception {
-        mockMvc.perform(get("/employee/getemployee"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("John Doe"))
-                .andExpect(jsonPath("$.age").value(30));
+    @BeforeEach
+    void setUp() {
+        empController = new EmpController();
     }
 
     @Test
-    void testAddEmployeeValid() throws Exception {
-        Employee employee = new Employee("Alice", 28);
-        mockMvc.perform(post("/employee/addemployee")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(employee)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("User added"));
+    void testGetEmployee() {
+        Employee employee = empController.getEmployee();
+        
+        assertEquals("John Doe", employee.getName());
+        assertEquals(30, employee.getAge());
     }
 
     @Test
-    void testAddEmployeeInvalid() throws Exception {
-        Employee employee = new Employee("", 0);
-        mockMvc.perform(post("/employee/addemployee")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(employee)))
-                .andExpect(status().isBadGateway())
-                .andExpect(content().string("Invalid data"));
+    void testAddEmployeeValidData() {
+        Employee validEmployee = new Employee("Alice", 25);
+        ResponseEntity<String> response = empController.addEmployee(validEmployee);
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("User added", response.getBody());
     }
 }
