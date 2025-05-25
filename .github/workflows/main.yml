@@ -15,14 +15,23 @@ jobs:
     BUILD_NO: ${{ github.run_number }} 
     
    steps:
+   # Checkout source code
     - name: Checkout source code
       uses: actions/checkout@v4 
 
+   # Set up java environment
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'oracle'
-
+        
+   # Build jar using Maven
     - name: Build using Maven
       run: mvn clean install
+
+   # Build and tag docker image
+    - name: Build Docker image
+      run: |
+       echo "Building docker image for $APP_NAME"
+       docker build -t $APP_NAME -f docker/Dockerfile
