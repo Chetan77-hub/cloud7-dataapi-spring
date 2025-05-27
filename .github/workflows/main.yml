@@ -45,7 +45,7 @@ jobs:
     - name: Assume Role
       uses: aws-actions/configure-aws-credentials@v4
       with:
-          role-to-assume: $ROLE
+          role-to-assume: arn:aws:iam::174627743630:role/GithubActionsImagePushRole
           role-session-name: GitHubActionsSession
           aws-region: us-east-1
 
