@@ -17,6 +17,8 @@ jobs:
    env:
     APP_NAME: ${{ github.event.repository.name }}  # Repo name as app name
     BUILD_NO: ${{ github.run_number }} 
+    AWS_REGION: us-east-1
+    ROLE: arn:aws:iam::174627743630:role/GithubActionsImagePushRole
     
    steps:
    # Checkout source code
@@ -43,6 +45,10 @@ jobs:
     - name: Assume Role
       uses: aws-actions/configure-aws-credentials@v4
       with:
-          role-to-assume: arn:aws:iam::174627743630:role/GithubActionsImagePushRole
+          role-to-assume: $ROLE
           role-session-name: GitHubActionsSession
-          aws-region: us-east-1
+          aws-region: $AWS_REGION
+
+          
+    - name: Log in to Amazon ECR
+      run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 174627743630.dkr.ecr.us-east-1.amazonaws.com/non-prod/cloud7
