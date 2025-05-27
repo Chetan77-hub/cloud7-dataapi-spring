@@ -37,8 +37,8 @@ jobs:
    #     docker build -t $APP_NAME -f docker/Dockerfile .
 
     - name: Assume Role
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
           role-to-assume: arn:aws:iam::174627743630:role/GithubActionsImagePushRole
           role-session-name: GitHubActionsSession
-          region: us-east-1
+          aws-region: us-east-1
